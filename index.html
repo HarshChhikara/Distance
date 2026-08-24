@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Distance.wtf — Daily Distance Guessing Game</title>
+    <meta
+        name="description"
+        content="Guess the distance between two points in five attempts. A new Distance puzzle is generated every day."
+    >
+    <meta
+        name="theme-color"
+        content="#242424"
+    >
+    <meta
+        name="color-scheme"
+        content="dark"
+    >
+    <meta
+        property="og:title"
+        content="Distance.wtf"
+    >
+    <meta
+        property="og:description"
+        content="Guess the distance between two points in five attempts. A new puzzle every day."
+    >
+    <meta
+        property="og:type"
+        content="website"
+    >
+    <meta
+        name="twitter:card"
+        content="summary"
+    >
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23242424'/%3E%3Cline x1='17' y1='45' x2='47' y2='19' stroke='%23eeeeee' stroke-width='4'/%3E%3Ccircle cx='17' cy='45' r='6' fill='%23CA7DFD'/%3E%3Ccircle cx='47' cy='19' r='6' fill='%23CA7DFD'/%3E%3C/svg%3E"
+    >
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+<body>
+<main class="app">
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <span class="logo-line"></span>
+                <span class="logo-point point-a"></span>
+                <span class="logo-point point-b"></span>
+            </div>
+            <span class="logo-text">
+                DISTANCE
+            </span>
+        </div>
+        <nav class="header-actions">
+            <button
+                id="howToPlayButton"
+                class="icon-button"
+                type="button"
+                aria-label="How to play"
+                title="How to play"
+            >
+                ❓
+            </button>
+            <button
+                id="statsButton"
+                class="icon-button"
+                type="button"
+                aria-label="Statistics"
+                title="Statistics"
+            >
+                📊
+            </button>
+        </nav>
+    </header>
+    <section class="game-section">
+        <div class="game-board">
+            <canvas
+                id="gameCanvas"
+                width="300"
+                height="300"
+                aria-label="Distance game board"
+            ></canvas>
+        </div>
+        <div class="guess-section">
+            <div class="guess-controls">
+                <input
+                    id="guessInput"
+                    type="text"
+                    inputmode="decimal"
+                    maxlength="4"
+                    autocomplete="off"
+                    placeholder="Distance in cm"
+                    aria-label="Distance guess"
+                >
+                <button
+                    id="guessButton"
+                    class="guess-button"
+                    type="button"
+                >
+                    Guess!
+                </button>
+            </div>
+            <div class="attempts">
+                Attempts:
+                <span id="attemptCount">5</span>/5
+            </div>
+            <div
+                id="guessHistory"
+                class="guess-history"
+                aria-live="polite"
+            ></div>
+            <div
+                id="gameResult"
+                class="game-result"
+                aria-live="assertive"
+            ></div>
+        </div>
+    </section>
+    <div
+        id="statsModal"
+        class="stats-modal"
+        aria-hidden="true"
+    >
+        <div
+            class="stats-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="statsTitle"
+        >
+            <button
+                id="closeStatsButton"
+                class="stats-close"
+                type="button"
+                aria-label="Close statistics"
+            >
+                ×
+            </button>
+            <div class="stats-header">
+                <h2 id="statsTitle">
+                    STATISTICS
+                </h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span
+                        id="gamesPlayedStat"
+                        class="stat-value"
+                    >
+                        0
+                    </span>
+                    <span class="stat-label">
+                        Played
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span
+                        id="gamesWonStat"
+                        class="stat-value"
+                    >
+                        0
+                    </span>
+                    <span class="stat-label">
+                        Won
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span
+                        id="winPercentageStat"
+                        class="stat-value"
+                    >
+                        0%
+                    </span>
+                    <span class="stat-label">
+                        Win %
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span
+                        id="currentStreakStat"
+                        class="stat-value"
+                    >
+                        0
+                    </span>
+                    <span class="stat-label">
+                        Current Streak
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span
+                        id="bestStreakStat"
+                        class="stat-value"
+                    >
+                        0
+                    </span>
+                    <span class="stat-label">
+                        Best Streak
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span
+                        id="averageGuessesStat"
+                        class="stat-value"
+                    >
+                        —
+                    </span>
+                    <span class="stat-label">
+                        Avg. Guesses
+                    </span>
+                </div>
+            </div>
+            <div class="distribution">
+                <h3>
+                    GUESS DISTRIBUTION
+                </h3>
+                <div class="distribution-row">
+                    <span class="distribution-number">
+                        1
+                    </span>
+                    <div class="distribution-bar-container">
+                        <div
+                            id="distributionBar1"
+                            class="distribution-bar"
+                        ></div>
+                    </div>
+                    <span
+                        id="distributionCount1"
+                        class="distribution-count"
+                    >
+                        0
+                    </span>
+                </div>
+                <div class="distribution-row">
+                    <span class="distribution-number">
+                        2
+                    </span>
+                    <div class="distribution-bar-container">
+                        <div
+                            id="distributionBar2"
+                            class="distribution-bar"
+                        ></div>
+                    </div>
+                    <span
+                        id="distributionCount2"
+                        class="distribution-count"
+                    >
+                        0
+                    </span>
+                </div>
+                <div class="distribution-row">
+                    <span class="distribution-number">
+                        3
+                    </span>
+                    <div class="distribution-bar-container">
+                        <div
+                            id="distributionBar3"
+                            class="distribution-bar"
+                        ></div>
+                    </div>
+                    <span
+                        id="distributionCount3"
+                        class="distribution-count"
+                    >
+                        0
+                    </span>
+                </div>
+                <div class="distribution-row">
+                    <span class="distribution-number">
+                        4
+                    </span>
+                    <div class="distribution-bar-container">
+                        <div
+                            id="distributionBar4"
+                            class="distribution-bar"
+                        ></div>
+                    </div>
+                    <span
+                        id="distributionCount4"
+                        class="distribution-count"
+                    >
+                        0
+                    </span>
+                </div>
+                <div class="distribution-row">
+                    <span class="distribution-number">
+                        5
+                    </span>
+                    <div class="distribution-bar-container">
+                        <div
+                            id="distributionBar5"
+                            class="distribution-bar"
+                        ></div>
+                    </div>
+                    <span
+                        id="distributionCount5"
+                        class="distribution-count"
+                    >
+                        0
+                    </span>
+                </div>
+            </div>
+            <button
+                id="resetStatsButton"
+                class="reset-stats-button"
+                type="button"
+            >
+                Reset Statistics
+            </button>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="social-links">
+            <a
+                href="https://play.google.com/store/apps/developer?id=Harsh+Chhikara"
+                aria-label="Console"
+            >
+                ◎
+            </a>
+        </div>
+        <a
+            href="#"
+            class="privacy-link"
+        >
+            Privacy Policy
+        </a>
+    </footer>
+    <div
+        id="howToPlayModal"
+        class="how-to-play-modal"
+        aria-hidden="true"
+    >
+        <div
+            class="how-to-play-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="howToPlayTitle"
+        >
+            <button
+                id="closeHowToPlayButton"
+                class="how-to-play-close"
+                type="button"
+                aria-label="Close how to play"
+            >
+                ×
+            </button>
+            <h2 id="howToPlayTitle">
+                HOW TO PLAY
+            </h2>
+            <div class="how-to-play-content">
+                <p class="how-to-play-intro">
+                    Guess the straight-line distance between points A and B.
+                </p>
+                <div class="how-to-play-rule">
+                    <strong>1. Enter your guess</strong>
+                    <span>The answer is always between 1.0 cm and 15.0 cm.</span>
+                </div>
+                <div class="how-to-play-rule">
+                    <strong>2. You have 5 attempts</strong>
+                    <span>Use each result to move closer to the correct distance.</span>
+                </div>
+                <div class="how-to-play-rule">
+                    <strong>3. Follow the feedback</strong>
+                    <div class="feedback-guide">
+                        <div class="feedback-row">
+                            <span class="feedback-symbol">↑</span>
+                            <span>Your guess is too low.</span>
+                        </div>
+                        <div class="feedback-row">
+                            <span class="feedback-symbol">↓</span>
+                            <span>Your guess is too high.</span>
+                        </div>
+                        <div class="feedback-row">
+                            <span class="feedback-symbol">✓</span>
+                            <span>You found the distance.</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="temperature-scale">
+                    COLD → COOL → WARM → HOT → BOILING → ALMOST → CORRECT
+                </p>
+                <p class="daily-note">
+                    One puzzle is available each day. Once you finish today's puzzle, come back tomorrow for a new one.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

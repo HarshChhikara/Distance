@@ -1,0 +1,1534 @@
+/*RESET*/
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    background: #242424;
+    color: #ffffff;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    overflow-x: hidden;
+}
+
+
+/*APP*/
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/*HEADER*/
+
+.header {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 8px;
+}
+
+
+/*LOGO*/
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    user-select: none;
+}
+
+.logo-icon {
+    position: relative;
+
+    width: 38px;
+    height: 38px;
+
+    border: 3px solid #eeeeee;
+    border-radius: 9px;
+
+    overflow: hidden;
+}
+
+.logo-point {
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    background: #CA7DFD;
+    border-radius: 50%;
+}
+
+.point-a {
+    left: 4px;
+    bottom: 7px;
+}
+
+.point-b {
+    right: 4px;
+    top: 7px;
+}
+
+.logo-text {
+    color: #CA7DFD;
+
+    font-size: 31px;
+    font-weight: 400;
+
+    letter-spacing: 0.5px;
+}
+
+
+/*HEADER ICONS*/
+
+.header-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    margin-top: 12px;
+}
+
+.icon-button {
+    width: 20px;
+    height: 20px;
+
+    border: none;
+    border-radius: 4px;
+
+    background: transparent;
+
+    color: #CA7DFD;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.12s ease,
+        opacity 0.15s ease;
+}
+
+.icon-button:hover {
+    background-color: #45474d;
+    transform: scale(1.12);
+    opacity: 0.9;
+}
+
+.icon-button:active {
+    transform: scale(0.94);
+}
+
+.icon-button:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+}
+
+.icon-button svg {
+    pointer-events: none;
+}
+
+
+/*GAME*/
+
+.game-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 24px;
+}
+
+
+/*BOARD*/
+
+.game-board {
+    width: 300px;
+    height: 300px;
+    position: relative;
+}
+
+#gameCanvas {
+    display: block;
+    width: 300px;
+    height: 300px;
+    background: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+
+/*BOARD FEEDBACK*/
+
+#gameCanvas.shake {
+    animation: boardShake 0.28s ease;
+}
+
+@keyframes boardShake {
+    0% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-4px);
+    }
+
+    40% {
+        transform: translateX(4px);
+    }
+
+    60% {
+        transform: translateX(-3px);
+    }
+
+    80% {
+        transform: translateX(3px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+#gameCanvas.success {
+    animation: boardSuccess 0.45s ease;
+}
+
+@keyframes boardSuccess {
+    0% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.025);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/*GUESS SECTION*/
+
+.guess-section {
+    width: min(440px, calc(100vw - 32px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.guess-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+#guessInput {
+    flex: 1;
+    min-width: 0;
+    height: 43px;
+
+    border: 1px solid #171717;
+    border-radius: 8px;
+    outline: none;
+
+    background: #393b40;
+    color: #ffffff;
+
+    padding: 0 12px;
+
+    font-size: 16px;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+#guessInput::placeholder {
+    color: #8d8d8d;
+}
+
+#guessInput:focus {
+    outline: none;
+
+    border-color: #CA7DFD;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(202, 125, 253, 0.18);
+}
+
+#guessInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/*GUESS BUTTON*/
+
+.guess-button {
+    height: 43px;
+
+    padding: 0 15px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #393b40;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease,
+        opacity 0.15s ease;
+}
+
+.guess-button:hover:not(:disabled) {
+    background: #45474d;
+    opacity: 0.9;
+}
+
+.guess-button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.guess-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
+/*ATTEMPTS*/
+
+.attempts {
+    margin-top: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#attemptCount {
+    color: #CA7DFD;
+    transition: transform 0.15s ease;
+}
+
+#attemptCount.pulse {
+    animation: attemptPulse 0.25s ease;
+}
+
+@keyframes attemptPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/*GUESS HISTORY*/
+
+.guess-history {
+    width: 100%;
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+/*GUESS ROW*/
+
+.guess-row {
+    width: 100%;
+    min-height: 36px;
+
+    display: grid;
+
+    grid-template-columns:
+        80px
+        42px
+        1fr;
+
+    border-radius: 6px;
+    overflow: hidden;
+
+    background: #393b40;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    animation:
+        guessAppear 0.22s ease;
+}
+
+
+/*GUESS ROW ANIMATION*/
+
+@keyframes guessAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/*GUESS VALUE*/
+
+.guess-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+
+    background: #393b40;
+}
+
+
+/*GUESS DIRECTION*/
+
+.guess-direction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: 2px;
+
+    background: #393b40;
+
+    color: #CA7DFD;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/*GUESS TEMPERATURE*/
+
+.guess-temperature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: 2px;
+
+    background: #393b40;
+
+    letter-spacing: 0.2px;
+
+    transition:
+        color 0.15s ease;
+}
+
+
+/*TEMPERATURE STATES*/
+
+.guess-temperature.cold {
+    color: #aaaaaa;
+}
+
+
+.guess-temperature.cool {
+    color: #eeeeee;
+}
+
+
+.guess-temperature.warm {
+    color: #ffd08a;
+}
+
+
+.guess-temperature.hot {
+    color: #ff9b70;
+}
+
+
+.guess-temperature.boiling {
+    color: #ff704f;
+
+    animation:
+        hotPulse 0.4s ease;
+}
+
+
+.guess-temperature.almost {
+    color: #ff8060;
+
+    animation:
+        almostPulse 0.5s ease;
+}
+
+
+.guess-temperature.correct {
+    color: #ff906d;
+
+    animation:
+        correctPulse 0.55s ease;
+}
+
+
+/*   
+   TEMPERATURE ANIMATIONS
+  */
+
+@keyframes hotPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+@keyframes almostPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+@keyframes correctPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    35% {
+        transform: scale(1.12);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/*   
+   GAME RESULT
+  */
+
+.game-result {
+    width: 100%;
+
+    min-height: 26px;
+
+    margin-top: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    opacity: 0;
+
+    transform: translateY(4px);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.game-result.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.game-result.win {
+    color: #CA7DFD;
+}
+
+.game-result.loss,
+.game-result.lose {
+    color: #ffffff;
+}
+
+
+/*   
+   EMPTY RESULT
+  */
+
+.game-result:empty {
+    display: none;
+}
+
+
+/*   
+   RESULT VISIBLE
+  */
+
+.game-result.show,
+.game-result.win,
+.game-result.loss,
+.game-result.lose {
+    opacity: 1;
+    transform: translateY(0);
+
+    animation:
+        resultAppear 0.35s ease;
+}
+
+
+/*   
+   WIN
+  */
+
+.game-result.win {
+    color: #CA7DFD;
+}
+
+
+/*   
+   LOSS
+  */
+
+.game-result.lose {
+    color: #ffffff;
+}
+
+
+/*   
+   RESULT ANSWER
+  */
+
+.result-answer {
+    color: #CA7DFD;
+}
+
+
+/*   
+   RESULT ANIMATION
+  */
+
+@keyframes resultAppear {
+
+    0% {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateY(0) scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/*   
+   FOOTER
+  */
+
+.footer {
+    margin-top: auto;
+    padding-top: 45px;
+    padding-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.social-links a {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: bold;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.social-links a:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+
+.social-links a:active {
+    transform: translateY(0) scale(0.96);
+}
+
+.social-links a:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.privacy-link {
+    margin-top: 13px;
+    color: #CA7DFD;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+}
+
+.privacy-link:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+#statsModal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    /*
+       Completely invisible initially.
+    */
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    /*
+       Prevent the hidden overlay from affecting
+       the page visually.
+    */
+
+    background: rgba(0, 0, 0, 0);
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/*   
+   OPEN STATE
+  */
+
+#statsModal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    background: rgba(0, 0, 0, 0.72);
+}
+
+
+/*   
+   STATISTICS DIALOG
+  */
+
+.stats-dialog {
+    position: relative;
+
+    width: min(430px, 100%);
+    max-height: calc(100vh - 40px);
+
+    overflow-y: auto;
+
+    padding: 28px 24px 24px;
+
+    border: 1px solid #45474d;
+    border-radius: 12px;
+
+    background: #2d2d2d;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+
+    transform:
+        translateY(10px)
+        scale(0.98);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/*   
+   OPEN DIALOG
+  */
+
+#statsModal.open .stats-dialog {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/*   
+   STATISTICS TITLE
+  */
+
+.stats-dialog h2 {
+    margin-bottom: 24px;
+
+    text-align: center;
+
+    color: #CA7DFD;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+/*   
+   CLOSE BUTTON
+  */
+
+.stats-close {
+    position: absolute;
+
+    top: 8px;
+    right: 10px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #aaaaaa;
+
+    font-size: 27px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.stats-close:hover {
+    background-color: #393b40;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.stats-close:active {
+    transform: scale(0.95);
+}
+
+.stats-close:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+}
+
+
+/*   
+   STATS GRID
+  */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 16px 8px;
+
+    margin-bottom: 28px;
+}
+
+.stat-item {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.stat-value {
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.stat-label {
+    margin-top: 5px;
+
+    color: #999999;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/*   
+   DISTRIBUTION
+  */
+
+.distribution h3 {
+    margin-bottom: 12px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+.distribution-row {
+    display: grid;
+
+    grid-template-columns:
+        16px
+        1fr
+        28px;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 7px;
+
+    color: #ffffff;
+
+    font-size: 12px;
+}
+
+.distribution-bar-container {
+    height: 22px;
+
+    overflow: hidden;
+
+    border-radius: 3px;
+
+    background: #393b40;
+}
+
+.distribution-bar {
+    width: 0;
+    height: 100%;
+
+    border-radius: 3px;
+
+    background: #CA7DFD;
+
+    transition:
+        width 0.3s ease;
+}
+
+.distribution-count {
+    text-align: right;
+
+    color: #aaaaaa;
+}
+
+.distribution-row:last-child {
+    margin-bottom: 0;
+}
+
+
+/*   
+   RESET STATISTICS
+  */
+
+.reset-stats-button {
+    width: 100%;
+
+    height: 38px;
+
+    margin-top: 22px;
+
+    border: 1px solid #555;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #aaaaaa;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.12s ease;
+}
+
+.reset-stats-button:hover {
+    background: #393b40;
+
+    color: #ffffff;
+
+    border-color: #666;
+}
+
+.reset-stats-button:active {
+    transform: scale(0.98);
+}
+
+.reset-stats-button:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+}
+
+
+/*   
+   HOW TO PLAY MODAL
+  */
+
+#howToPlayModal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    background: rgba(0, 0, 0, 0);
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease,
+        background 0.2s ease;
+}
+
+#howToPlayModal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.how-to-play-dialog {
+    position: relative;
+
+    width: min(430px, 100%);
+    max-height: calc(100vh - 40px);
+
+    overflow-y: auto;
+
+    padding: 28px 24px 24px;
+
+    border: 1px solid #45474d;
+    border-radius: 12px;
+
+    background: #2d2d2d;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+
+    transform:
+        translateY(10px)
+        scale(0.98);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+#howToPlayModal.open .how-to-play-dialog {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.how-to-play-dialog h2 {
+    margin-bottom: 20px;
+
+    text-align: center;
+
+    color: #CA7DFD;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.how-to-play-close {
+    position: absolute;
+
+    top: 8px;
+    right: 10px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #aaaaaa;
+
+    font-size: 27px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.how-to-play-close:hover {
+    background-color: #393b40;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.how-to-play-close:active {
+    transform: scale(0.95);
+}
+
+.how-to-play-close:focus-visible {
+    outline: 2px solid #CA7DFD;
+    outline-offset: 2px;
+}
+
+.how-to-play-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    color: #dddddd;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.how-to-play-intro {
+    margin-bottom: 2px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.how-to-play-rule {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    padding: 11px 12px;
+
+    border-radius: 8px;
+
+    background: #393b40;
+}
+
+.how-to-play-rule strong {
+    color: #CA7DFD;
+    font-size: 13px;
+}
+
+.feedback-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    margin-top: 4px;
+}
+
+.feedback-row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    gap: 6px;
+}
+
+.feedback-symbol {
+    color: #CA7DFD;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.temperature-scale {
+    color: #aaaaaa;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.daily-note {
+    padding-top: 2px;
+    color: #ffffff;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/*   
+   MOBILE STATISTICS MODAL
+  */
+
+@media (max-width: 500px) {
+
+    .guess-row {
+    grid-template-columns:
+        72px
+        38px
+        1fr;
+
+    min-height: 34px;
+
+    font-size: 13px;
+}
+
+.guess-direction {
+    font-size: 17px;
+}
+
+    .stats-dialog,
+    .how-to-play-dialog {
+        padding:
+            26px 18px 20px;
+    }
+
+    .stats-grid {
+        gap: 14px 4px;
+    }
+
+    .stat-value {
+        font-size: 21px;
+    }
+
+    .stat-label {
+        font-size: 8px;
+    }
+}
+
+
+/*   
+   MOBILE
+  */
+
+@media (max-width: 600px) {
+
+    .header {
+        padding-top: 8px;
+    }
+
+    .logo-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .logo-text {
+        font-size: 27px;
+    }
+
+    .game-section {
+        margin-top: 18px;
+    }
+
+    .guess-section {
+        margin-top: 10px;
+    }
+
+    .footer {
+        padding-top: 40px;
+        padding-bottom: 20px;
+    }
+}
+
+
+/*   
+   VERY SMALL SCREENS
+  */
+
+@media (max-width: 360px) {
+
+    .guess-history {
+        width: calc(100vw - 24px);
+    }
+
+    .guess-row {
+        grid-template-columns: 68px 36px 1fr;
+        min-height: 34px;
+        font-size: 13px;
+    }
+
+    .guess-value {
+        padding: 0 4px;
+    }
+
+    .guess-direction {
+       font-size: 16px;
+    }
+
+    .guess-temperature {
+        padding: 0 6px;
+        font-size: 12px;
+    }
+    
+    .logo-text {
+        font-size: 24px;
+    }
+
+    .header-actions {
+        margin-top: 10px;
+    }
+
+    .game-board {
+        transform: scale(0.9);
+        transform-origin: center center;
+        margin-top: -15px;
+        margin-bottom: -15px;
+    }
+
+    .guess-section {
+        width: calc(100vw - 24px);
+    }
+
+    .guess-controls {
+        gap: 6px;
+    }
+
+    #guessInput {
+        height: 41px;
+        padding: 0 10px;
+        font-size: 15px;
+    }
+
+    .guess-button {
+        height: 41px;
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 13px;
+    }
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .stats-dialog,
+    .how-to-play-dialog {
+    width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
+    padding: 20px 14px;
+    overflow-y: auto;
+}
+
+.stats-dialog h2,
+.how-to-play-dialog h2 {
+    font-size: 20px;
+}
+
+.stats-grid {
+    gap: 10px;
+}
+
+.stat-value {
+    font-size: 22px;
+}
+
+.stat-label {
+    font-size: 10px;
+}
+
+.distribution {
+    margin-top: 18px;
+}
+
+.distribution-row {
+    grid-template-columns: 20px 1fr 28px;
+    gap: 6px;
+}
+
+.reset-stats-button {
+    width: 100%;
+    margin-top: 18px;
+}
+}
+
+@media (max-width: 500px) and (max-height: 700px) {
+
+    .app {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .guess-section {
+        margin-top: 8px;
+    }
+
+    .guess-history {
+        margin-top: 6px;
+    }
+
+    .stats-modal,
+    .how-to-play-modal {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .stats-dialog,
+    .how-to-play-dialog {
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
+    }
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.app {
+    width: 100%;
+    max-width: 100%;
+}
+
+.game-board,
+.guess-section,
+.guess-history {
+    max-width: 100%;
+}
+
+img,
+canvas {
+    max-width: 100%;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
