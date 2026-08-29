@@ -11,6 +11,10 @@
         name="description"
         content="Guess the distance between two points in five attempts. A new Distance puzzle is generated every day."
     >
+    <link
+        rel="canonical"
+        href="https://distance.wtf/"
+    >
     <meta
         name="theme-color"
         content="#242424"
@@ -21,7 +25,7 @@
     >
     <meta
         property="og:title"
-        content="Distance.wtf"
+        content="Distance.wtf — Daily Distance Guessing Game"
     >
     <meta
         property="og:description"
@@ -32,14 +36,36 @@
         content="website"
     >
     <meta
+        property="og:url"
+        content="https://distance.wtf/"
+    >
+    <meta
         name="twitter:card"
         content="summary"
+    >
+    <meta
+        name="twitter:title"
+        content="Distance.wtf — Daily Distance Guessing Game"
+    >
+    <meta
+        name="twitter:description"
+        content="Guess the distance between two points in five attempts. A new Distance.wtf puzzle is generated every day."
     >
     <link
         rel="icon"
         type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23242424'/%3E%3Cline x1='17' y1='45' x2='47' y2='19' stroke='%23eeeeee' stroke-width='4'/%3E%3Ccircle cx='17' cy='45' r='6' fill='%23CA7DFD'/%3E%3Ccircle cx='47' cy='19' r='6' fill='%23CA7DFD'/%3E%3C/svg%3E"
     >
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Distance.wtf",
+        "url": "https://distance.wtf/",
+        "description": "A daily distance guessing game where you estimate the distance between two points in five attempts."
+    }
+    </script>
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="2f4a17f7-11a5-4909-831e-9aae473f29f1"></script>
     <link
         rel="stylesheet"
         href="style.css"
@@ -306,6 +332,14 @@
                 </div>
             </div>
             <button
+                id="shareResultButton"
+                class="share-result-button"
+                type="button"
+                disabled
+            >
+            Share Result
+</button>
+            <button
                 id="resetStatsButton"
                 class="reset-stats-button"
                 type="button"
@@ -324,7 +358,7 @@
             </a>
         </div>
         <a
-            href="#"
+            href="privacy.html"
             class="privacy-link"
         >
             Privacy Policy

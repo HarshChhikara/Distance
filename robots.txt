@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://distance.wtf/sitemap.xml

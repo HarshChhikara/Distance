@@ -55,7 +55,12 @@ const STATS_STORAGE_KEY =
 const DAILY_COMPLETION_PREFIX =
     "distanceWtfCompleted_";
 
+const SHARE_STORAGE_PREFIX =
+    "distanceWtfShare_";
 
+const GAME_URL =
+    "https://distance.wtf";
+  
 /* DEFAULT STATISTICS */
 
 const DEFAULT_STATS = {
@@ -92,7 +97,35 @@ let gameOver = false;
 
 let resultRecorded = false;
 
+/* ANALYTICS */
 
+function trackAnalytics(
+    eventName,
+    eventData = null
+) {
+
+    if (
+        !window.umami ||
+        typeof window.umami.track !== "function"
+    ) {
+        return;
+    }
+
+
+    if (eventData) {
+
+        window.umami.track(
+            eventName,
+            eventData
+        );
+
+    } else {
+
+        window.umami.track(
+            eventName
+        );
+    }
+}
 
 
 /* TODAY LOCAL DATE */
@@ -253,6 +286,427 @@ function markDailyPuzzleCompleted(
         ),
         "true"
     );
+}
+
+/* =========================================================
+   DAILY SHARE STORAGE KEY
+   ========================================================= */
+
+function getDailyShareKey(
+    dateString = null
+) {
+
+    const date =
+        dateString ||
+        getTodayLocalDate();
+
+
+    return (
+        SHARE_STORAGE_PREFIX +
+        date
+    );
+}
+
+
+/* =========================================================
+   TEMPERATURE → SHARE PROGRESS BAR
+   ========================================================= */
+
+function getShareProgressBar(
+    temperatureElement
+) {
+
+    if (
+        temperatureElement.classList.contains(
+            "correct"
+        )
+    ) {
+        return "🟪🟪🟪🟪🟪";
+    }
+
+
+    if (
+        temperatureElement.classList.contains(
+            "almost"
+        )
+    ) {
+        return "🟧🟧🟧🟧🟧";
+    }
+
+
+    if (
+        temperatureElement.classList.contains(
+            "boiling"
+        )
+    ) {
+        return "🟧🟧🟧🟧⬜";
+    }
+
+
+    if (
+        temperatureElement.classList.contains(
+            "hot"
+        )
+    ) {
+        return "🟧🟧🟧⬜⬜";
+    }
+
+
+    if (
+        temperatureElement.classList.contains(
+            "warm"
+        )
+    ) {
+        return "🟧🟧⬜⬜⬜";
+    }
+
+
+    if (
+        temperatureElement.classList.contains(
+            "cool"
+        )
+    ) {
+        return "🟧⬜⬜⬜⬜";
+    }
+
+
+    return "⬜⬜⬜⬜⬜";
+}
+
+
+/* =========================================================
+   BUILD SHARE RESULT
+   ========================================================= */
+
+function buildDailyShareText(
+    won
+) {
+
+    const rows =
+        document.querySelectorAll(
+            "#guessHistory .guess-row"
+        );
+
+
+    const shareRows =
+        [];
+
+
+    rows.forEach(
+        (row) => {
+
+            const directionElement =
+                row.querySelector(
+                    ".guess-direction"
+                );
+
+
+            const temperatureElement =
+                row.querySelector(
+                    ".guess-temperature"
+                );
+
+
+            if (
+                !directionElement ||
+                !temperatureElement
+            ) {
+                return;
+            }
+
+
+            /*
+               Build the closeness bar.
+            */
+
+            const progressBar =
+                getShareProgressBar(
+                    temperatureElement
+                );
+
+
+            /*
+               Convert game direction
+               into share-friendly symbols.
+            */
+
+            let direction =
+                directionElement
+                    .textContent
+                    .trim();
+
+
+            if (
+                direction === "↑"
+            ) {
+
+                direction = "⬆️";
+
+            } else if (
+                direction === "↓"
+            ) {
+
+                direction = "⬇️";
+
+            } else {
+
+                direction = "✅";
+            }
+
+
+            shareRows.push(
+                `${direction} ${progressBar}`
+            );
+        }
+    );
+
+
+    const score =
+        won
+            ? `${attemptsUsed}/${GAME_CONFIG.maxAttempts}`
+            : `X/${GAME_CONFIG.maxAttempts}`;
+
+
+    return [
+
+        `DISTANCE.WTF ${getTodayLocalDate()}`,
+
+        "",
+
+        ...shareRows,
+
+        "",
+
+        score,
+
+        "",
+
+        GAME_URL
+
+    ].join(
+        "\n"
+    );
+}
+
+
+/* =========================================================
+   SAVE DAILY SHARE RESULT
+   ========================================================= */
+
+function saveDailyShareText(
+    text
+) {
+
+    localStorage.setItem(
+
+        getDailyShareKey(),
+
+        text
+    );
+}
+
+
+/* =========================================================
+   GET DAILY SHARE RESULT
+   ========================================================= */
+
+function getDailyShareText() {
+
+    return localStorage.getItem(
+        getDailyShareKey()
+    );
+}
+
+
+/* =========================================================
+   UPDATE SHARE BUTTON
+   ========================================================= */
+
+function updateShareButton() {
+
+    if (
+        !shareResultButton
+    ) {
+        return;
+    }
+
+
+    const shareText =
+        getDailyShareText();
+
+
+    shareResultButton.disabled =
+        !shareText;
+}
+
+
+/* =========================================================
+   COPY SHARE RESULT
+   ========================================================= */
+
+async function copyShareText(
+    text
+) {
+
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        return;
+    }
+
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+
+    textarea.value =
+        text;
+
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.opacity =
+        "0";
+
+
+    document.body.appendChild(
+        textarea
+    );
+
+
+    textarea.focus();
+
+    textarea.select();
+
+
+    document.execCommand(
+        "copy"
+    );
+
+
+    textarea.remove();
+}
+
+
+/* =========================================================
+   SHARE RESULT
+   ========================================================= */
+
+async function shareDailyResult() {
+
+    const shareText =
+        getDailyShareText();
+
+
+    if (
+        !shareText
+    ) {
+        return;
+    }
+
+
+    /*
+       IMPORTANT:
+
+       Send the entire result as TEXT.
+
+       Do not pass "url" separately because some
+       browsers/share targets will prioritize the URL
+       and discard the rest of the result.
+    */
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator.share({
+
+                text:
+                    shareText
+
+            });
+
+
+            return;
+
+        } catch (error) {
+
+            /*
+               User simply closed
+               the share dialog.
+            */
+
+            if (
+                error.name ===
+                "AbortError"
+            ) {
+
+                return;
+            }
+
+
+            console.error(
+                "Native sharing failed:",
+                error
+            );
+        }
+    }
+
+
+    /*
+       FALLBACK:
+       Copy the complete result.
+    */
+
+    try {
+
+        await copyShareText(
+            shareText
+        );
+
+
+        if (
+            shareResultButton
+        ) {
+
+            const originalText =
+                shareResultButton
+                    .textContent;
+
+
+            shareResultButton.textContent =
+                "Copied!";
+
+
+            setTimeout(
+                () => {
+
+                    shareResultButton.textContent =
+                        originalText;
+
+                },
+                1500
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Unable to share result:",
+            error
+        );
+    }
 }
 
 
@@ -631,6 +1085,10 @@ const resetStatsButton =
     document.getElementById(
         "resetStatsButton"
     );
+const shareResultButton =
+    document.getElementById(
+        "shareResultButton"
+    );    
 
 
 
@@ -905,6 +1363,7 @@ function openStatsModal() {
 
 
     updateStatsModal();
+    updateShareButton();
 
 
     statsModal.classList.add(
@@ -2078,6 +2537,18 @@ function endGame(
     gameOver =
         true;
 
+trackAnalytics(
+    "game_completed",
+    {
+        result:
+            won
+                ? "won"
+                : "lost",
+
+        attempts:
+            attemptsUsed
+    }
+);
 
     const input =
         document.getElementById(
@@ -2145,6 +2616,23 @@ function endGame(
         );
     }
 
+    /*
+   Create and store today's
+   spoiler-free share result.
+*/
+
+const shareText =
+    buildDailyShareText(
+        won
+    );
+
+
+saveDailyShareText(
+    shareText
+);
+
+
+updateShareButton();
     setTimeout(
 
         () => {
@@ -2246,6 +2734,12 @@ function processGuess() {
     return;
 }
 
+if (attemptsUsed === 0) {
+
+    trackAnalytics(
+        "game_started"
+    );
+}
     const answer =
         currentPuzzle.distanceCm;
 
@@ -2582,6 +3076,40 @@ if (guessInput) {
                 event.preventDefault();
 
                 processGuess();
+            }
+        }
+    );
+}
+
+/* =========================================================
+   SHARE RESULT BUTTON
+   ========================================================= */
+
+if (
+    shareResultButton
+) {
+
+    shareResultButton.addEventListener(
+
+        "click",
+
+        shareDailyResult
+    );
+}
+
+if (shareResultButton) {
+
+    shareResultButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                !shareResultButton.disabled
+            ) {
+
+                trackAnalytics(
+                    "share_clicked"
+                );
             }
         }
     );
